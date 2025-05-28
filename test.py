@@ -43,10 +43,7 @@ def Mytest(helper, epoch,
                      'Accuracy: {}/{} ({:.4f}%)'.format(model.name, is_poison, epoch,
                                                         total_l, correct, dataset_size,
                                                         acc))
-    if visualize: # loss =total_l
-        model.test_vis(vis=main.vis, epoch=epoch, acc=acc, loss=None,
-                       eid=helper.params['environment_name'],
-                       agent_name_key=str(agent_name_key))
+    
     model.train()
     return (total_l, acc, correct, dataset_size)
 
@@ -108,8 +105,6 @@ def Mytest_poison(helper, epoch,
                      'Accuracy: {}/{} ({:.4f}%)'.format(model.name, is_poison, epoch,
                                                         total_l, correct, poison_data_count,
                                                         acc))
-    if visualize: #loss = total_l
-        model.poison_test_vis(vis=main.vis, epoch=epoch, acc=acc, loss=None, eid=helper.params['environment_name'],agent_name_key=str(agent_name_key))
 
     model.train()
     return total_l, acc, correct, poison_data_count

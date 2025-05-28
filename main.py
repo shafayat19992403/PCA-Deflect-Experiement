@@ -33,12 +33,14 @@ logger = logging.getLogger("logger")
 # logger.setLevel("ERROR")
 
 
-vis = visdom.Visdom(port=8098)
+
 criterion = torch.nn.CrossEntropyLoss()
 torch.manual_seed(1)
 torch.cuda.manual_seed(1)
 random.seed(1)
-def trigger_test_byindex(helper, index, vis, epoch):
+
+
+def trigger_test_byindex(helper, index, epoch):
     epoch_loss, epoch_acc, epoch_corret, epoch_total = \
         test.Mytest_poison_trigger(helper=helper, model=helper.target_model,
                                    adver_trigger_index=index)
@@ -47,44 +49,15 @@ def trigger_test_byindex(helper, index, vis, epoch):
          epoch_loss, epoch_acc, epoch_corret, epoch_total])
     # logger.info(f"[Epoch {temp_global_epoch}] Backdoor Accuracy (combine): "
     #         f"{epoch_corret}/{epoch_total} ({100.*epoch_acc_p:.2f}%)")
-    if helper.params['vis_trigger_split_test']:
-        helper.target_model.trigger_agent_test_vis(vis=vis, epoch=epoch, acc=epoch_acc, loss=None,
-                                                   eid=helper.params['environment_name'],
-                                                   name="global_in_index_" + str(index) + "_trigger")
-def trigger_test_byname(helper, agent_name_key, vis, epoch):
+
+def trigger_test_byname(helper, agent_name_key, epoch):
     epoch_loss, epoch_acc, epoch_corret, epoch_total = \
         test.Mytest_poison_agent_trigger(helper=helper, model=helper.target_model, agent_name_key=agent_name_key)
     csv_record.poisontriggertest_result.append(
         ['global', "global_in_" + str(agent_name_key) + "_trigger", "", epoch,
          epoch_loss, epoch_acc, epoch_corret, epoch_total])
     
-    if helper.params['vis_trigger_split_test']:
-        helper.target_model.trigger_agent_test_vis(vis=vis, epoch=epoch, acc=epoch_acc, loss=None,
-                                                   eid=helper.params['environment_name'],
-                                                   name="global_in_" + str(agent_name_key) + "_trigger")
-def vis_agg_weight(helper,names,weights,epoch,vis,adversarial_name_keys):
-    print(names)
-    print(adversarial_name_keys)
-    for i in range(0,len(names)):
-        _name= names[i]
-        _weight=weights[i]
-        _is_poison=False
-        if _name in adversarial_name_keys:
-            _is_poison=True
-        helper.target_model.weight_vis(vis=vis,epoch=epoch,weight=_weight, eid=helper.params['environment_name'],
-                                       name=_name,is_poisoned=_is_poison)
 
-def vis_fg_alpha(helper,names,alphas,epoch,vis,adversarial_name_keys):
-    print(names)
-    print(adversarial_name_keys)
-    for i in range(0,len(names)):
-        _name= names[i]
-        _alpha=alphas[i]
-        _is_poison=False
-        if _name in adversarial_name_keys:
-            _is_poison=True
-        helper.target_model.alpha_vis(vis=vis,epoch=epoch,alpha=_alpha, eid=helper.params['environment_name'],
-                                       name=_name,is_poisoned=_is_poison)
 
 if __name__ == '__main__':
     print('Start training')
@@ -124,8 +97,6 @@ if __name__ == '__main__':
 
     best_loss = float('inf')
 
-    vis.text(text=dict_html(helper.params, current_time=helper.params["current_time"]),
-             env=helper.params['environment_name'], opts=dict(width=300, height=400))
     logger.info(f"We use following environment for graphs:  {helper.params['environment_name']}")
 
     weight_accumulator = helper.init_weight_accumulator(helper.target_model)
@@ -210,13 +181,9 @@ if __name__ == '__main__':
         elif helper.params['aggregation_methods'] == config.AGGR_GEO_MED:
             maxiter = helper.params['geom_median_maxiter']
             num_oracle_calls, is_updated, names, weights, alphas = helper.geometric_median_update(helper.target_model, updates, maxiter=maxiter)
-            vis_agg_weight(helper, names, weights, epoch, vis, adversarial_name_keys)
-            vis_fg_alpha(helper, names, alphas, epoch, vis, adversarial_name_keys)
 
         elif helper.params['aggregation_methods'] == config.AGGR_FOOLSGOLD:
             is_updated, names, weights, alphas = helper.foolsgold_update(helper.target_model, updates)
-            vis_agg_weight(helper,names,weights,epoch,vis,adversarial_name_keys)
-            vis_fg_alpha(helper,names,alphas,epoch,vis,adversarial_name_keys )
             num_oracle_calls = 1
 
         # clear the weight_accumulator
@@ -279,4 +246,4 @@ if __name__ == '__main__':
                 f"Visdom environment: {helper.params['environment_name']}")
 
 
-    vis.save([helper.params['environment_name']])
+
