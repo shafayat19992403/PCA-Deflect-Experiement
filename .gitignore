@@ -1,0 +1,36 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VSCode workspace settings
+.vscode/
+
+# Python virtual environments
+env/
+venv/
+.venv/
+torch_env/
+
+# Model checkpoints and outputs
+saved_models/
+*.pt
+*.pth
+*.ckpt
+
+# Dataset directory (raw or large data)
+data/
+
+# Log files and experiment results
+*.log
+results*.json
+
+# PyTest cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS system files
+.DS_Store
+Thumbs.db
