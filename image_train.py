@@ -109,11 +109,11 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
                             temp_data_len = len(data_iterator)
                             distance_to_global_model = helper.model_dist_norm(model, target_params_variables)
                             dis2global_list.append(distance_to_global_model)
-                            model.track_distance_batch_vis(vis=main.vis, epoch=temp_local_epoch,
-                                                           data_len=temp_data_len,
-                                                            batch=batch_id,distance_to_global_model= distance_to_global_model,
-                                                           eid=helper.params['environment_name'],
-                                                           name=str(agent_name_key),is_poisoned=True)
+                            # model.track_distance_batch_vis(vis=main.vis, epoch=temp_local_epoch,
+                            #                                data_len=temp_data_len,
+                            #                                 batch=batch_id,distance_to_global_model= distance_to_global_model,
+                            #                                eid=helper.params['environment_name'],
+                            #                                name=str(agent_name_key),is_poisoned=True)
 
                     if step_lr:
                         scheduler.step()
@@ -130,10 +130,7 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
                     csv_record.train_result.append(
                         [agent_name_key, temp_local_epoch,
                          epoch, internal_epoch, total_l.item(), acc, correct, dataset_size])
-                    if helper.params['vis_train']:
-                        model.train_vis(main.vis, temp_local_epoch,
-                                        acc, loss=total_l, eid=helper.params['environment_name'], is_poisoned=True,
-                                        name=str(agent_name_key) )
+                    
                     num_samples_dict[agent_name_key] = dataset_size
                     if helper.params["batch_track_distance"]:
                         main.logger.info(
@@ -177,13 +174,7 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
                     csv_record.scale_temp_one_row.append(round(distance, 4))
                     if helper.params["batch_track_distance"]:
                         temp_data_len = len(helper.train_data[agent_name_key][1])
-                        model.track_distance_batch_vis(vis=main.vis, epoch=temp_local_epoch,
-                                                       data_len=temp_data_len,
-                                                       batch=temp_data_len-1,
-                                                       distance_to_global_model=distance,
-                                                       eid=helper.params['environment_name'],
-                                                       name=str(agent_name_key), is_poisoned=True)
-
+                        
                 distance = helper.model_dist_norm(model, target_params_variables)
                 main.logger.info(f"Total norm for {current_number_of_adversaries} "
                                  f"adversaries is: {helper.model_global_norm(model)}. distance: {distance}")
@@ -225,23 +216,14 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
                         if helper.params["vis_train_batch_loss"]:
                             cur_loss = loss.data
                             temp_data_len = len(data_iterator)
-                            model.train_batch_vis(vis=main.vis,
-                                                  epoch=temp_local_epoch,
-                                                  data_len=temp_data_len,
-                                                  batch=batch_id,
-                                                  loss=cur_loss,
-                                                  eid=helper.params['environment_name'],
-                                                  name=str(agent_name_key) , win='train_batch_loss', is_poisoned=False)
+                            
                         if helper.params["batch_track_distance"]:
                             # we can calculate distance to this model now
                             temp_data_len = len(data_iterator)
                             distance_to_global_model = helper.model_dist_norm(model, target_params_variables)
                             dis2global_list.append(distance_to_global_model)
-                            model.track_distance_batch_vis(vis=main.vis, epoch=temp_local_epoch,
-                                                           data_len=temp_data_len,
-                                                            batch=batch_id,distance_to_global_model= distance_to_global_model,
-                                                           eid=helper.params['environment_name'],
-                                                           name=str(agent_name_key),is_poisoned=False)
+                            
+                                                    
 
                     acc = 100.0 * (float(correct) / float(dataset_size))
                     total_l = total_loss / dataset_size
@@ -253,10 +235,7 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
                     csv_record.train_result.append([agent_name_key, temp_local_epoch,
                                                     epoch, internal_epoch, total_l.item(), acc, correct, dataset_size])
 
-                    if helper.params['vis_train']:
-                        model.train_vis(main.vis, temp_local_epoch,
-                                        acc, loss=total_l, eid=helper.params['environment_name'], is_poisoned=False,
-                                        name=str(agent_name_key))
+                    
                     num_samples_dict[agent_name_key] = dataset_size
 
                     if helper.params["batch_track_distance"]:
@@ -283,20 +262,12 @@ def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_n
 
                 #  test on local triggers
                 if agent_name_key in helper.params['adversary_list']:
-                    if helper.params['vis_trigger_split_test']:
-                        model.trigger_agent_test_vis(vis=main.vis, epoch=epoch, acc=epoch_acc, loss=None,
-                                                     eid=helper.params['environment_name'],
-                                                     name=str(agent_name_key)  + "_combine")
 
                     epoch_loss, epoch_acc, epoch_corret, epoch_total = \
                         test.Mytest_poison_agent_trigger(helper=helper, model=model, agent_name_key=agent_name_key)
                     csv_record.poisontriggertest_result.append(
                         [agent_name_key, str(agent_name_key) + "_trigger", "", epoch, epoch_loss,
                          epoch_acc, epoch_corret, epoch_total])
-                    if helper.params['vis_trigger_split_test']:
-                        model.trigger_agent_test_vis(vis=main.vis, epoch=epoch, acc=epoch_acc, loss=None,
-                                                     eid=helper.params['environment_name'],
-                                                     name=str(agent_name_key) + "_trigger")
 
             # update the model weight
             local_model_update_dict = dict()

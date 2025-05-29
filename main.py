@@ -145,34 +145,37 @@ if __name__ == '__main__':
                                                                   is_poison=helper.params['is_poison'],
                                                                   agent_name_keys=agent_name_keys)
         logger.info(f'time spent on training: {time.time() - t}')
-        # client_names   = list(epochs_submit_update_dict.keys())
-        # client_weights = [updates[-1] for updates in epochs_submit_update_dict.values()]
+        if helper.params["aggregation_methods"] == config.AGGR_PCA_DEFLECT:
+            client_names   = list(epochs_submit_update_dict.keys())
+            client_weights = [updates[-1] for updates in epochs_submit_update_dict.values()]
 
-        # client_weights_flat = defenses.pca_deflect.extract_client_weights(client_weights)
-        
+            client_weights_flat = defenses.pca_deflect.extract_client_weights(client_weights)
+            
 
-        # outliers, _ = defenses.pca_deflect.apply_pca_to_weights(client_weights_flat, client_names, epoch, [])
-        # print(outliers)
+            outliers, _ = defenses.pca_deflect.apply_pca_to_weights(client_weights_flat, client_names, epoch, [])
+            print(outliers)
 
-        # for bad in outliers:
-        #     epochs_submit_update_dict.pop(bad, None)   # drop their weight updates :contentReference[oaicite:0]{index=0}
-        #     num_samples_dict.pop(bad,         None)   # drop their sample counts  :contentReference[oaicite:1]{index=1}
-        #     if bad in agent_name_keys:
-        #         agent_name_keys.remove(bad)  
-        #         print("Removed Outlier's influence", bad) 
+            for bad in outliers:
+                epochs_submit_update_dict.pop(bad, None)   # drop their weight updates :contentReference[oaicite:0]{index=0}
+                num_samples_dict.pop(bad,         None)   # drop their sample counts  :contentReference[oaicite:1]{index=1}
+                if bad in agent_name_keys:
+                    agent_name_keys.remove(bad)  
+                    print("Removed Outlier's influence", bad) 
 
         agents_num = len(agent_name_keys)
 
          
         weight_accumulator, updates = helper.accumulate_weight(weight_accumulator, epochs_submit_update_dict,
                                                                agent_name_keys, num_samples_dict)
-        # for bad in outliers:
-        #     if bad not in agent_name_keys:
-        #         agent_name_keys.append(bad)
+        
+        if helper.params["aggregation_methods"] == config.AGGR_PCA_DEFLECT:
+            for bad in outliers:
+                if bad not in agent_name_keys:
+                    agent_name_keys.append(bad)
 
 
         is_updated = True
-        if helper.params['aggregation_methods'] == config.AGGR_MEAN:
+        if helper.params['aggregation_methods'] == config.AGGR_MEAN or helper.params['aggregation_methods'] == config.AGGR_PCA_DEFLECT:
             # Average the models
             is_updated = helper.average_shrink_models(weight_accumulator=weight_accumulator,
                                                       target_model=helper.target_model,
@@ -228,10 +231,10 @@ if __name__ == '__main__':
             if len(helper.params['adversary_list']) == 1:  # centralized attack
                 if helper.params['centralized_test_trigger'] == True:  # centralized attack test on local triggers
                     for j in range(0, helper.params['trigger_num']):
-                        trigger_test_byindex(helper, j, vis, epoch)
+                        trigger_test_byindex(helper, j, epoch)
             else:  # distributed attack
                 for agent_name_key in helper.params['adversary_list']:
-                    trigger_test_byname(helper, agent_name_key, vis, epoch)
+                    trigger_test_byname(helper, agent_name_key, epoch)
                     # logger.info(f"Backdoor Accuracy (combine) at epoch {temp_global_epoch}: "f"{epoch_corret}/{epoch_total} ({100.*epoch_acc_p:.2f}%)")
 
 
