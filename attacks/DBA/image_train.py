@@ -1,10 +1,10 @@
-import utils.csv_record as csv_record
+import attacks.DBA.utils.csv_record as csv_record
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import time
-import main
-import test
+import main as main
+import attacks.DBA.test as test
 import copy
 import config
 

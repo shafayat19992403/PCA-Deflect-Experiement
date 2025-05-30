@@ -5,24 +5,24 @@ import os
 import logging
 import torch
 import torch.nn as nn
-import train
-import test
+import attacks.DBA.train as train_dba
+import attacks.DBA.test as test_dba
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import math
 import csv
 from torchvision import transforms
-from loan_helper import LoanHelper
-from image_helper import ImageHelper
-from utils.utils import dict_html
-import utils.csv_record as csv_record
+
+from attacks.DBA.image_helper import ImageHelper
+from attacks.DBA.utils.utils import dict_html
+import attacks.DBA.utils.csv_record as csv_record
 import yaml
 import time
 import visdom
 import numpy as np
 import random
-import config
+import config 
 import copy
 import defenses.pca_deflect
 
@@ -42,17 +42,15 @@ random.seed(1)
 
 def trigger_test_byindex(helper, index, epoch):
     epoch_loss, epoch_acc, epoch_corret, epoch_total = \
-        test.Mytest_poison_trigger(helper=helper, model=helper.target_model,
+        test_dba.Mytest_poison_trigger(helper=helper, model=helper.target_model,
                                    adver_trigger_index=index)
     csv_record.poisontriggertest_result.append(
         ['global', "global_in_index_" + str(index) + "_trigger", "", epoch,
          epoch_loss, epoch_acc, epoch_corret, epoch_total])
-    # logger.info(f"[Epoch {temp_global_epoch}] Backdoor Accuracy (combine): "
-    #         f"{epoch_corret}/{epoch_total} ({100.*epoch_acc_p:.2f}%)")
 
 def trigger_test_byname(helper, agent_name_key, epoch):
     epoch_loss, epoch_acc, epoch_corret, epoch_total = \
-        test.Mytest_poison_agent_trigger(helper=helper, model=helper.target_model, agent_name_key=agent_name_key)
+        test_dba.Mytest_poison_agent_trigger(helper=helper, model=helper.target_model, agent_name_key=agent_name_key)
     csv_record.poisontriggertest_result.append(
         ['global', "global_in_" + str(agent_name_key) + "_trigger", "", epoch,
          epoch_loss, epoch_acc, epoch_corret, epoch_total])
@@ -69,11 +67,8 @@ if __name__ == '__main__':
     with open(f'./{args.params}', 'r') as f:
         params_loaded = yaml.safe_load(f)
     current_time = datetime.datetime.now().strftime('%b.%d_%H.%M.%S')
-    if params_loaded['type'] == config.TYPE_LOAN:
-        helper = LoanHelper(current_time=current_time, params=params_loaded,
-                            name=params_loaded.get('name', 'loan'))
-        helper.load_data(params_loaded)
-    elif params_loaded['type'] == config.TYPE_CIFAR:
+        
+    if params_loaded['type'] == config.TYPE_CIFAR:
         helper = ImageHelper(current_time=current_time, params=params_loaded,
                              name=params_loaded.get('name', 'cifar'))
         helper.load_data()
@@ -139,7 +134,7 @@ if __name__ == '__main__':
             if helper.params['is_random_adversary']==False:
                 adversarial_name_keys=copy.deepcopy(helper.params['adversary_list'])
         logger.info(f'Server Epoch:{epoch} choose agents : {agent_name_keys}.')
-        epochs_submit_update_dict, num_samples_dict = train.train(helper=helper, start_epoch=epoch,
+        epochs_submit_update_dict, num_samples_dict = train_dba.train(helper=helper, start_epoch=epoch,
                                                                   local_model=helper.local_model,
                                                                   target_model=helper.target_model,
                                                                   is_poison=helper.params['is_poison'],
@@ -194,12 +189,10 @@ if __name__ == '__main__':
 
         temp_global_epoch = epoch + helper.params['aggr_epoch_interval'] - 1
 
-        epoch_loss, epoch_acc, epoch_corret, epoch_total = test.Mytest(helper=helper, epoch=temp_global_epoch,
+        epoch_loss, epoch_acc, epoch_corret, epoch_total = test_dba.Mytest(helper=helper, epoch=temp_global_epoch,
                                                                        model=helper.target_model, is_poison=False,
                                                                        visualize=True, agent_name_key="global")
         csv_record.test_result.append(["global", temp_global_epoch, epoch_loss, epoch_acc, epoch_corret, epoch_total])
-        # logger.info(f"Backdoor Accuracy (combine) at epoch {temp_global_epoch}: "
-        #     f"{epoch_corret}/{epoch_total} ({100.*epoch_acc_p:.2f}%)")
 
 
         if len(csv_record.scale_temp_one_row)>0:
@@ -207,7 +200,7 @@ if __name__ == '__main__':
 
         if helper.params['is_poison']:
 
-            epoch_loss, epoch_acc_p, epoch_corret, epoch_total = test.Mytest_poison(helper=helper,
+            epoch_loss, epoch_acc_p, epoch_corret, epoch_total = test_dba.Mytest_poison(helper=helper,
                                                                                     epoch=temp_global_epoch,
                                                                                     model=helper.target_model,
                                                                                     is_poison=True,

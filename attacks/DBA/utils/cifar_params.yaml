@@ -1,5 +1,5 @@
 ---
-type: cifar
+type: mnist
 test_batch_size: 64
 lr: 0.1
 poison_lr: 0.05
@@ -11,10 +11,10 @@ epochs: 300
 internal_epochs: 2
 internal_poison_epochs: 6
 internal_poison_clean_epochs: 0
-poisoning_per_batch: 5
+poisoning_per_batch: 8
 aggr_epoch_interval: 1
 # aggregation_methods Allowed values are: [ 'mean', 'geom_median','foolsgold', 'pca-deflect']
-aggregation_methods: "mean"
+aggregation_methods: "pca-deflect"
 geom_median_maxiter: 10
 fg_use_memory: true
 participants_namelist: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # not used when is_random_namelist == true

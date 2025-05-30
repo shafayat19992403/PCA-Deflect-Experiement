@@ -11,4 +11,6 @@ patience_iter=20
 TYPE_LOAN='loan'
 TYPE_CIFAR='cifar'
 TYPE_MNIST='mnist'
+TYPE_FMNIST='fmnist'
+TYPE_EMNIST='emnist'
 TYPE_TINYIMAGENET='tiny-imagenet-200'

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import config
 
-import main
+import main as main
 
 def Mytest(helper, epoch,
            model, is_poison=False, visualize=True, agent_name_key=""):

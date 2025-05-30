@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.utils.data
 
-from helper import Helper
+from attacks.DBA.helper import Helper
 import random
 import logging
 from torchvision import datasets, transforms
@@ -38,7 +38,7 @@ class ImageHelper(Helper):
             target_model = ResNet18(name='Target',
                                    created_time=self.params['current_time'])
 
-        elif self.params['type']==config.TYPE_MNIST:
+        elif self.params['type']==config.TYPE_MNIST or self.params['type']==config.TYPE_FMNIST or self.params['type']==config.TYPE_EMNIST:
             local_model = MnistNet(name='Local',
                                    created_time=self.params['current_time'])
             target_model = MnistNet(name='Target',
@@ -190,25 +190,28 @@ class ImageHelper(Helper):
 
         elif self.params['type'] == config.TYPE_MNIST:
 
-            # self.train_dataset = datasets.MNIST('./data', train=True, download=True,
-            #                    transform=transforms.Compose([
-            #                        transforms.ToTensor(),
-            #                        # transforms.Normalize((0.1307,), (0.3081,))
-            #                    ]))
-            # self.test_dataset = datasets.MNIST('./data', train=False, transform=transforms.Compose([
-            #         transforms.ToTensor(),
-            #         # transforms.Normalize((0.1307,), (0.3081,))
-            #     ]))
+            self.train_dataset = datasets.MNIST('./data', train=True, download=True,
+                               transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   # transforms.Normalize((0.1307,), (0.3081,))
+                               ]))
+            self.test_dataset = datasets.MNIST('./data', train=False, transform=transforms.Compose([
+                    transforms.ToTensor(),
+                    # transforms.Normalize((0.1307,), (0.3081,))
+                ]))
+        elif self.params['type'] == config.TYPE_EMNIST:
 
-            # self.train_dataset = datasets.EMNIST('./data',split='digits', train=True, download=True,
-            #                    transform=transforms.Compose([
-            #                        transforms.ToTensor(),
-            #                        # transforms.Normalize((0.1307,), (0.3081,))
-            #                    ]))
-            # self.test_dataset = datasets.EMNIST('./data',split='digits', train=False, transform=transforms.Compose([
-            #         transforms.ToTensor(),
-            #         # transforms.Normalize((0.1307,), (0.3081,))
-            #     ]))
+            self.train_dataset = datasets.EMNIST('./data',split='digits', train=True, download=True,
+                               transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   # transforms.Normalize((0.1307,), (0.3081,))
+                               ]))
+            self.test_dataset = datasets.EMNIST('./data',split='digits', train=False, transform=transforms.Compose([
+                    transforms.ToTensor(),
+                    # transforms.Normalize((0.1307,), (0.3081,))
+                ]))
+            
+        elif self.params['type'] == config.TYPE_FMNIST:
             self.train_dataset = datasets.FashionMNIST('./data', train=True, download=True,
                                transform=transforms.Compose([
                                    transforms.ToTensor(),
