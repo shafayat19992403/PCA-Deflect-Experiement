@@ -1,5 +1,5 @@
 ---
-type: image
+type: mnist
 test_batch_size: 1000
 lr: 0.1
 momentum: 0.9
@@ -15,6 +15,7 @@ sampling_dirichlet: false
 dirichlet_alpha: 1
 eta: 1
 
+aggregation_methods: "pca-deflect"
 save_model: false
 save_on_epochs: [40, 100, 500, 1000, 2000, 5000]
 #resumed_model: false
@@ -64,7 +65,7 @@ baseline: false
 random_compromise: false
 noise_level: 0.01
 
-poison_epochs: [50]
+poison_epochs: [1]
 retrain_poison: 15
 scale_weights: 200
 poison_lr: 0.05

@@ -3,18 +3,19 @@ from collections import defaultdict
 import torch
 import torch.utils.data
 
-from helper import Helper
+from attacks.ConstrainScale.helper import Helper
 import random
 import logging
 from torchvision import datasets, transforms
 import numpy as np
 
-from models.resnet import ResNet18
-from models.word_model import RNNModel
-from utils.text_load import *
-from utils.utils import SubsetSampler
+from models.resnet_cifar import ResNet18
+import config
+
+
+from attacks.ConstrainScale.utils.utils import SubsetSampler
 from models.cifar_model import CifarNet
-from models.simple import SimpleMnist
+from models.MnistNet import MnistNet
 
 logger = logging.getLogger("logger")
 POISONED_PARTICIPANT_POS = 0
@@ -28,20 +29,28 @@ class ImageHelper(Helper):
         return
 
     def create_model(self):
-        # local_model = ResNet18(name='Local',
-        #             created_time=self.params['current_time'])
-        # local_model = CifarNet(name='local',created_time=self.params['current_time'])
-        local_model = SimpleMnist(name='local', created_time=self.params['current_time'])
-        # local_model.cuda()
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        local_model.to(device)
+        local_model = None
+        target_model = None
 
-        # target_model = ResNet18(name='Target',
-        #                 created_time=self.params['current_time'])
-        # target_model = CifarNet(name='local',created_time=self.params['current_time'])
-        target_model = SimpleMnist(name='local', created_time=self.params['current_time'])
-        # target_model.cuda()
-        target_model.to(device)
+        if self.params['type']==config.TYPE_CIFAR:
+            local_model = ResNet18(name='Local',
+                                   created_time=self.params['current_time'])
+            target_model = ResNet18(name='Target',
+                                   created_time=self.params['current_time'])
+
+        elif self.params['type']==config.TYPE_MNIST or self.params['type']==config.TYPE_FMNIST or self.params['type']==config.TYPE_EMNIST:
+            local_model = MnistNet(name='Local',
+                                   created_time=self.params['current_time'])
+            target_model = MnistNet(name='Target',
+                                    created_time=self.params['current_time'])
+
+        elif self.params['type']==config.TYPE_TINYIMAGENET:
+
+            local_model= ResNet18(name='Local',
+                                   created_time=self.params['current_time'])
+            target_model = ResNet18(name='Target',
+                                    created_time=self.params['current_time'])
+
         if self.params['resumed_model']:
             loaded_params = torch.load(f"saved_models/{self.params['resumed_model']}")
             target_model.load_state_dict(loaded_params['state_dict'])
@@ -52,8 +61,11 @@ class ImageHelper(Helper):
         else:
             self.start_epoch = 1
 
+        local_model.to(config.device)
+        target_model.to(config.device)
         self.local_model = local_model
         self.target_model = target_model
+        
 
 
     def sample_dirichlet_train_data(self, no_participants, alpha=0.9):
@@ -144,40 +156,54 @@ class ImageHelper(Helper):
     def load_data(self):
         logger.info('Loading data')
 
-        ### data load
-        # transform_train = transforms.Compose([
-        #     transforms.RandomCrop(32, padding=4),
-        #     transforms.RandomHorizontalFlip(),
-        #     transforms.ToTensor(),
-        #     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        # ])
+        if self.params['type'] == config.TYPE_CIFAR:
+            ### data load
+            transform_train = transforms.Compose([
+                transforms.ToTensor(),
+            ])
 
-        # transform_test = transforms.Compose([
-        #     transforms.ToTensor(),
-        #     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        # ])
+            transform_test = transforms.Compose([
+                transforms.ToTensor(),
+            ])
 
-        # self.train_dataset = datasets.CIFAR10('./data', train=True, download=True,
-        #                                  transform=transform_train)
+            self.train_dataset = datasets.CIFAR10('./data', train=True, download=True,
+                                             transform=transform_train)
 
-        # self.test_dataset = datasets.CIFAR10('./data', train=False, transform=transform_test)
-        transform_train = transforms.Compose([
-            transforms.RandomCrop(28, padding=4),    # optional: adds jitter
-            transforms.RandomRotation(10),           # optional: slight rotation
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))  # mean and std for MNIST
-        ])
+            self.test_dataset = datasets.CIFAR10('./data', train=False, transform=transform_test)
 
-        transform_test = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
-        ])
+        elif self.params['type'] == config.TYPE_MNIST:
 
-        self.train_dataset = datasets.MNIST('./data', train=True, download=True,
-                                            transform=transform_train)
+            self.train_dataset = datasets.MNIST('./data', train=True, download=True,
+                               transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   # transforms.Normalize((0.1307,), (0.3081,))
+                               ]))
+            self.test_dataset = datasets.MNIST('./data', train=False, transform=transforms.Compose([
+                    transforms.ToTensor(),
+                    # transforms.Normalize((0.1307,), (0.3081,))
+                ]))
+        elif self.params['type'] == config.TYPE_EMNIST:
 
-        self.test_dataset = datasets.MNIST('./data', train=False,
-                                        transform=transform_test)
+            self.train_dataset = datasets.EMNIST('./data',split='digits', train=True, download=True,
+                               transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   # transforms.Normalize((0.1307,), (0.3081,))
+                               ]))
+            self.test_dataset = datasets.EMNIST('./data',split='digits', train=False, transform=transforms.Compose([
+                    transforms.ToTensor(),
+                    # transforms.Normalize((0.1307,), (0.3081,))
+                ]))
+            
+        elif self.params['type'] == config.TYPE_FMNIST:
+            self.train_dataset = datasets.FashionMNIST('./data', train=True, download=True,
+                               transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   # transforms.Normalize((0.1307,), (0.3081,))
+                               ]))
+            self.test_dataset = datasets.FashionMNIST('./data', train=False, transform=transforms.Compose([
+                    transforms.ToTensor(),
+                    # transforms.Normalize((0.1307,), (0.3081,))
+                ]))
 
         if self.params['sampling_dirichlet']:
             ## sample indices for participants using Dirichlet distribution

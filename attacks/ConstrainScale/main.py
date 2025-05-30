@@ -9,32 +9,30 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import math
-from defense import pca_deflect
+import defenses.pca_deflect as pca_deflect
 import copy
+import config
 
 from torchvision import transforms
 
-from image_helper import ImageHelper
-from text_helper import TextHelper
+from attacks.ConstrainScale.image_helper import ImageHelper
 
-from utils.utils import dict_html
+
+from attacks.ConstrainScale.utils.utils import dict_html
 
 logger = logging.getLogger("logger")
 # logger.setLevel("ERROR")
 import yaml
 import time
-import visdom
 import numpy as np
 
-vis = visdom.Visdom()
+
 import random
-from utils.text_load import *
+
 
 criterion = torch.nn.CrossEntropyLoss()
 
-# torch.manual_seed(1)
-# torch.cuda.manual_seed(1)
-# random.seed(1)
+
 
 def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, last_weight_accumulator=None):
     print("Prining dhukse kina")
@@ -78,12 +76,7 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
         model.train()
 
         start_time = time.time()
-        if helper.params['type'] == 'text':
-            current_data_model, train_data = train_data_sets[model_id]
-            ntokens = len(helper.corpus.dictionary)
-            hidden = model.init_hidden(helper.params['batch_size'])
-        else:
-            _ , (current_data_model, train_data) = train_data_sets[model_id]
+        _ , (current_data_model, train_data) = train_data_sets[model_id]
         batch_size = helper.params['batch_size']
         ### For a 'poison_epoch' we perform single shot poisoning
 
@@ -128,9 +121,6 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
             saved_batch = None
             acc = acc_initial
             try:
-                # fisher = helper.estimate_fisher(target_model, criterion, train_data,
-                #                                 12800, batch_size)
-                # helper.consolidate(local_model, fisher)
 
                 for internal_epoch in range(1, retrain_no_times + 1):
                     if step_lr:
@@ -142,14 +132,8 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                         data_iterator = poisoned_data
 
 
-                    # logger.info("fisher")
-                    # logger.info(fisher)
-
-
                     logger.info(f"PARAMS: {helper.params['retrain_poison']} epoch: {internal_epoch},"
                                 f" lr: {scheduler.get_lr()}")
-                    # if internal_epoch>20:
-                    #     data_iterator = train_data
 
                     for batch_id, batch in enumerate(data_iterator):
 
@@ -167,14 +151,8 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                         data, targets = helper.get_batch(poisoned_data, batch, False)
 
                         poison_optimizer.zero_grad()
-                        if helper.params['type'] == 'text':
-                            hidden = helper.repackage_hidden(hidden)
-                            output, hidden = model(data, hidden)
-                            class_loss = criterion(output[-1].view(-1, ntokens),
-                                                   targets[-batch_size:])
-                        else:
-                            output = model(data)
-                            class_loss = nn.functional.cross_entropy(output, targets)
+                        output = model(data)
+                        class_loss = nn.functional.cross_entropy(output, targets)
 
                         all_model_distance = helper.model_dist_norm(target_model, target_params_variables)
                         norm = 2
@@ -188,41 +166,6 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                                                         data_source=helper.test_data_poison,
                                                         model=model, is_poison=True,
                                                         visualize=False)
-
-                            model.train_vis(vis=vis, epoch=internal_epoch,
-                                            data_len=len(data_iterator),
-                                            batch=batch_id,
-                                            loss=class_loss.data,
-                                            eid=helper.params['environment_name'],
-                                            name='Classification Loss', win='poison')
-
-                            model.train_vis(vis=vis, epoch=internal_epoch,
-                                            data_len=len(data_iterator),
-                                            batch=batch_id,
-                                            loss=all_model_distance,
-                                            eid=helper.params['environment_name'],
-                                            name='All Model Distance', win='poison')
-
-                            model.train_vis(vis=vis, epoch=internal_epoch,
-                                            data_len = len(data_iterator),
-                                            batch = batch_id,
-                                            loss = acc_p / 100.0,
-                                            eid = helper.params['environment_name'], name='Accuracy',
-                                            win = 'poison')
-
-                            model.train_vis(vis=vis, epoch=internal_epoch,
-                                            data_len=len(data_iterator),
-                                            batch=batch_id,
-                                            loss=acc / 100.0,
-                                            eid=helper.params['environment_name'], name='Main Accuracy',
-                                            win='poison')
-
-
-                            model.train_vis(vis=vis, epoch=internal_epoch,
-                                            data_len=len(data_iterator),
-                                            batch=batch_id, loss=distance_loss.data,
-                                            eid=helper.params['environment_name'], name='Distance Loss',
-                                            win='poison')
 
 
                         loss.backward()
@@ -246,10 +189,7 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                                     layer.data.copy_(
                                         target_model.state_dict()[name] + clipped_difference)
 
-                        elif helper.params['type'] == 'text':
-                            torch.nn.utils.clip_grad_norm_(model.parameters(),
-                                                           helper.params['clip'])
-                            poison_optimizer.step()
+                        
                         else:
                             poison_optimizer.step()
                     loss, acc = test(helper=helper, epoch=epoch, data_source=helper.test_data,
@@ -316,16 +256,7 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                         f'MODEL {adv_model_id}. P-norm is {helper.model_global_norm(model):.4f}. '
                         f'Distance to the global model: {distance:.4f}. '
                         f'Dataset size: {train_data.size(0)}')
-                    vis.line(Y=np.array([distance]), X=np.array([epoch]),
-                             win=f"global_dist_{helper.params['current_time']}",
-                             env=helper.params['environment_name'],
-                             name=f'Model_{adv_model_id}',
-                             update='append' if vis.win_exists(
-                                 f"global_dist_{helper.params['current_time']}",
-                                 env=helper.params['environment_name']) else None,
-                             opts=dict(showlegend=True,
-                                       title=f"Distance to Global {helper.params['current_time']}",
-                                       width=700, height=400))
+                    
 
             for key, value in model.state_dict().items():
                 #### don't scale tied weights:
@@ -346,21 +277,14 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
 
             for internal_epoch in range(1, helper.params['retrain_no_times'] + 1):
                 total_loss = 0.
-                if helper.params['type'] == 'text':
-                    data_iterator = range(0, train_data.size(0) - 1, helper.params['bptt'])
-                else:
-                    data_iterator = train_data
+                data_iterator = train_data
                 for batch_id, batch in enumerate(data_iterator):
                     optimizer.zero_grad()
                     data, targets = helper.get_batch(train_data, batch,
                                                       evaluation=False)
-                    if helper.params['type'] == 'text':
-                        hidden = helper.repackage_hidden(hidden)
-                        output, hidden = model(data, hidden)
-                        loss = criterion(output.view(-1, ntokens), targets)
-                    else:
-                        output = model(data)
-                        loss = nn.functional.cross_entropy(output, targets)
+                
+                    output = model(data)
+                    loss = nn.functional.cross_entropy(output, targets)
 
                     loss.backward()
 
@@ -378,11 +302,7 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                                 layer.data - target_model.state_dict()[name])
                                 layer.data.copy_(
                                     target_model.state_dict()[name] + clipped_difference)
-                    elif helper.params['type'] == 'text':
-                        # `clip_grad_norm` helps prevent the exploding gradient
-                        # problem in RNNs / LSTMs.
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), helper.params['clip'])
-                        optimizer.step()
+                    
                     else:
                         optimizer.step()
 
@@ -412,18 +332,7 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                     f'MODEL {model_id}. P-norm is {helper.model_global_norm(model):.4f}. '
                     f'Distance to the global model: {distance_to_global_model:.4f}. '
                     f'Dataset size: {train_data.size(0)}')
-                vis.line(Y=np.array([distance_to_global_model]), X=np.array([epoch]),
-                         win=f"global_dist_{helper.params['current_time']}",
-                         env=helper.params['environment_name'],
-                         name=f'Model_{model_id}',
-                         update='append' if
-                         vis.win_exists(f"global_dist_{helper.params['current_time']}",
-                                                           env=helper.params[
-                                                               'environment_name']) else None,
-                         opts=dict(showlegend=True,
-                                   title=f"Distance to Global {helper.params['current_time']}",
-                                   width=700, height=400))
-
+               
         delta = {}
         for name, data in model.state_dict().items():
             #### don't scale tied weights:
@@ -468,19 +377,19 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
         print(f"Model {model_id} finished training, preparing delta.")
 
 
-    
-    logger.info("Finding out the outliers")
-    flat = pca_deflect.extract_client_weights(individual_deltas)
-    outliers, _ = pca_deflect.apply_pca_to_weights(flat, client_ids, epoch, helper.params.get('flagged_clients', []))
-    
-    print("Selected clients this round:", client_ids)
-    print("Malicious clients:", helper.params['adversary_list'])
-    print("Outliers detected (as returned):", outliers)
+    if helper.params['aggregation_methods'] == config.AGGR_PCA_DEFLECT:
+        logger.info("Finding out the outliers")
+        flat = pca_deflect.extract_client_weights(individual_deltas)
+        outliers, _ = pca_deflect.apply_pca_to_weights(flat, client_ids, epoch, helper.params.get('flagged_clients', []))
+        
+        print("Selected clients this round:", client_ids)
+        print("Malicious clients:", helper.params['adversary_list'])
+        print("Outliers detected (as returned):", outliers)
 
-    # if len(outliers) > 0:
-    #     # print(weight_accumulator)
-    #     weight_accumulator = adjust_weight_accumulator(weight_accumulator,individual_deltas,client_ids, outliers, 1) 
-    #     # print(weight_accumulator)
+        if len(outliers) > 0:
+            # print(weight_accumulator)
+            weight_accumulator = adjust_weight_accumulator(weight_accumulator,individual_deltas,client_ids, outliers, 0.01) 
+            # print(weight_accumulator)
     return weight_accumulator
 
 
@@ -514,72 +423,27 @@ def test(helper, epoch, data_source,
     total_loss = 0
     correct = 0
     total_test_words = 0
-    if helper.params['type'] == 'text':
-        hidden = model.init_hidden(helper.params['test_batch_size'])
-        random_print_output_batch = \
-        random.sample(range(0, (data_source.size(0) // helper.params['bptt']) - 1), 1)[0]
-        data_iterator = range(0, data_source.size(0)-1, helper.params['bptt'])
-        dataset_size = len(data_source)
-    else:
-        dataset_size = len(data_source.dataset)
-        data_iterator = data_source
+    dataset_size = len(data_source.dataset)
+    data_iterator = data_source
 
     for batch_id, batch in enumerate(data_iterator):
         data, targets = helper.get_batch(data_source, batch, evaluation=True)
-        if helper.params['type'] == 'text':
-            output, hidden = model(data, hidden)
-            output_flat = output.view(-1, helper.n_tokens)
-            total_loss += len(data) * criterion(output_flat, targets).data
-            hidden = helper.repackage_hidden(hidden)
-            pred = output_flat.data.max(1)[1]
-            correct += pred.eq(targets.data).sum().to(dtype=torch.float)
-            total_test_words += targets.data.shape[0]
-
-            ### output random result :)
-            if batch_id == random_print_output_batch * helper.params['bptt'] and \
-                    helper.params['output_examples'] and epoch % 5 == 0:
-                expected_sentence = helper.get_sentence(targets.data.view_as(data)[:, 0])
-                expected_sentence = f'*EXPECTED*: {expected_sentence}'
-                predicted_sentence = helper.get_sentence(pred.view_as(data)[:, 0])
-                predicted_sentence = f'*PREDICTED*: {predicted_sentence}'
-                score = 100. * pred.eq(targets.data).sum() / targets.data.shape[0]
-                logger.info(expected_sentence)
-                logger.info(predicted_sentence)
-
-                vis.text(f"<h2>Epoch: {epoch}_{helper.params['current_time']}</h2>"
-                         f"<p>{expected_sentence.replace('<','&lt;').replace('>', '&gt;')}"
-                         f"</p><p>{predicted_sentence.replace('<','&lt;').replace('>', '&gt;')}</p>"
-                         f"<p>Accuracy: {score} %",
-                         win=f"text_examples_{helper.params['current_time']}",
-                         env=helper.params['environment_name'])
-        else:
-            output = model(data)
-            total_loss += nn.functional.cross_entropy(output, targets,
+        output = model(data)
+        total_loss += nn.functional.cross_entropy(output, targets,
                                               reduction='sum').item() # sum up batch loss
-            pred = output.data.max(1)[1]  # get the index of the max log-probability
-            correct += pred.eq(targets.data.view_as(pred)).cpu().sum().item()
+        pred = output.data.max(1)[1]  # get the index of the max log-probability
+        correct += pred.eq(targets.data.view_as(pred)).cpu().sum().item()
 
-    if helper.params['type'] == 'text':
-        acc = 100.0 * (correct / total_test_words)
-        total_l = total_loss.item() / (dataset_size-1)
-        logger.info('___Test {} poisoned: {}, epoch: {}: Average loss: {:.4f}, '
-                    'Accuracy: {}/{} ({:.4f}%)'.format(model.name, is_poison, epoch,
-                                                       total_l, correct, total_test_words,
-                                                       acc))
-        acc = acc.item()
-        total_l = total_l.item()
-    else:
-        acc = 100.0 * (float(correct) / float(dataset_size))
-        total_l = total_loss / dataset_size
+    
+    acc = 100.0 * (float(correct) / float(dataset_size))
+    total_l = total_loss / dataset_size
 
-        logger.info('___Test {} poisoned: {}, epoch: {}: Average loss: {:.4f}, '
+    logger.info('___Test {} poisoned: {}, epoch: {}: Average loss: {:.4f}, '
                     'Accuracy: {}/{} ({:.4f}%)'.format(model.name, is_poison, epoch,
                                                        total_l, correct, dataset_size,
                                                        acc))
 
-    if visualize:
-        model.visualize(vis, epoch, acc, total_l if helper.params['report_test_loss'] else None,
-                        eid=helper.params['environment_name'], is_poisoned=is_poison)
+    
     model.train()
     return (total_l, acc)
 
@@ -610,65 +474,38 @@ def test_poison(helper, epoch, data_source,
 
 
         data, targets = helper.get_batch(data_source, batch, evaluation=True)
-        if helper.params['type'] == 'text':
-            output, hidden = model(data, hidden)
-            output_flat = output.view(-1, ntokens)
-            total_loss += 1 * criterion(output_flat[-batch_size:], targets[-batch_size:]).data
-            hidden = helper.repackage_hidden(hidden)
-
-            ### Look only at predictions for the last words.
-            # For tensor [640] we look at last 10, as we flattened the vector [64,10] to 640
-            # example, where we want to check for last line (b,d,f)
-            # a c e   -> a c e b d f
-            # b d f
-            pred = output_flat.data.max(1)[1][-batch_size:]
-
-
-            correct_output = targets.data[-batch_size:]
-            correct += pred.eq(correct_output).sum()
-            total_test_words += batch_size
-        else:
-            output = model(data)
-            total_loss += nn.functional.cross_entropy(output, targets,
+        
+        output = model(data)
+        total_loss += nn.functional.cross_entropy(output, targets,
                                               reduction='sum').data.item()  # sum up batch loss
-            pred = output.data.max(1)[1]  # get the index of the max log-probability
-            correct += pred.eq(targets.data.view_as(pred)).cpu().sum().to(dtype=torch.float)
+        pred = output.data.max(1)[1]  # get the index of the max log-probability
+        correct += pred.eq(targets.data.view_as(pred)).cpu().sum().to(dtype=torch.float)
 
-    if helper.params['type'] == 'text':
-        acc = 100.0 * (correct / total_test_words)
-        total_l = total_loss.item() / dataset_size
-    else:
-        acc = 100.0 * (correct / dataset_size)
-        total_l = total_loss / dataset_size
+    acc = 100.0 * (correct / dataset_size)
+    total_l = total_loss / dataset_size
     logger.info('___Test {} poisoned: {}, epoch: {}: Average loss: {:.4f}, '
                 'Accuracy: {}/{} ({:.0f}%)'.format(model.name, is_poison, epoch,
                                                    total_l, correct, dataset_size,
                                                    acc))
-    if visualize:
-        model.visualize(vis, epoch, acc, total_l if helper.params['report_test_loss'] else None,
-                        eid=helper.params['environment_name'], is_poisoned=is_poison)
+    
     model.train()
     return total_l, acc
 
 
-if __name__ == '__main__':
+def main_cas(defense_name, dataset_name):
     print('Start training')
     time_start_load_everything = time.time()
 
-    parser = argparse.ArgumentParser(description='PPDL')
-    parser.add_argument('--params', dest='params')
-    args = parser.parse_args()
+    
 
-    with open(f'./{args.params}', 'r') as f:
+    with open('attacks/ConstrainScale/utils/params.yaml', 'r') as f:
         params_loaded = yaml.load(f, Loader=yaml.FullLoader)
     current_time = datetime.datetime.now().strftime('%b.%d_%H.%M.%S')
-    if params_loaded['type'] == "image":
-        helper = ImageHelper(current_time=current_time, params=params_loaded,
+    helper = ImageHelper(current_time=current_time, params=params_loaded,
                              name=params_loaded.get('name', 'image'))
-    else:
-        helper = TextHelper(current_time=current_time, params=params_loaded,
-                            name=params_loaded.get('name', 'text'))
-
+    
+    helper.params['type'] = dataset_name
+    helper.params['aggregation_methods'] = defense_name
     helper.load_data()
     helper.create_model()
 
@@ -682,9 +519,8 @@ if __name__ == '__main__':
         helper.params['adversary_list'] = list()
 
     best_loss = float('inf')
-    vis.text(text=dict_html(helper.params, current_time=helper.params["current_time"]),
-             env=helper.params['environment_name'], opts=dict(width=300, height=400))
-    logger.info(f"We use following environment for graphs:  {helper.params['environment_name']}")
+    
+   
     participant_ids = range(len(helper.train_data))
     mean_acc = list()
 
@@ -781,6 +617,6 @@ if __name__ == '__main__':
                 results['mean_poison'] = np.mean(mean_acc)
             f.write(json.dumps(results) + '\n')
 
-    vis.save([helper.params['environment_name']])
+   
 
 

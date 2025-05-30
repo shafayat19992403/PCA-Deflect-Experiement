@@ -8,7 +8,7 @@ import logging
 from torch.nn.functional import log_softmax
 import torch.nn.functional as F
 logger = logging.getLogger("logger")
-from defense import pca_deflect
+from defenses import pca_deflect
 import os
 
 
