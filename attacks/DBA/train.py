@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import time
-import main as main
+
 import attacks.DBA.image_train as image_train_dba
 import config
 import random

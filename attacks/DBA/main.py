@@ -57,17 +57,21 @@ def trigger_test_byname(helper, agent_name_key, epoch):
     
 
 
-if __name__ == '__main__':
+def main_dba(defense_name, dataset_name):
     print('Start training')
     np.random.seed(1)
     time_start_load_everything = time.time()
-    parser = argparse.ArgumentParser(description='PPDL')
-    parser.add_argument('--params', dest='params')
-    args = parser.parse_args()
-    with open(f'./{args.params}', 'r') as f:
+    # parser = argparse.ArgumentParser(description='PPDL')
+    # parser.add_argument('--params', dest='params')
+    # args = parser.parse_args()
+    # with open(f'./{args.params}', 'r') as f:
+    #     params_loaded = yaml.safe_load(f)
+    with open('./attacks/DBA/utils/cifar_params.yaml') as f:
         params_loaded = yaml.safe_load(f)
     current_time = datetime.datetime.now().strftime('%b.%d_%H.%M.%S')
-        
+    
+    params_loaded['aggregation_methods'] = defense_name
+    params_loaded['type'] = dataset_name
     if params_loaded['type'] == config.TYPE_CIFAR:
         helper = ImageHelper(current_time=current_time, params=params_loaded,
                              name=params_loaded.get('name', 'cifar'))

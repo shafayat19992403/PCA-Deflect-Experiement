@@ -3,10 +3,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import time
-import main as main
+
 import attacks.DBA.test as test
 import copy
 import config
+import attacks.DBA.main as main
 
 
 def ImageTrain(helper, start_epoch, local_model, target_model, is_poison,agent_name_keys):
