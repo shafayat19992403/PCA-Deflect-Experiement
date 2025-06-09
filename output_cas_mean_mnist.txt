@@ -1,0 +1,253 @@
+current path: saved_models/model_image_Jun.09_23.15.14
+Loading data
+Poisoned following participants: 1, These are [0]
+Selected models: [86, 49, 95, 52, 53, 72, 18, 53, 5, 9]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.682738780975342
+___Test Target_Simple poisoned: True, epoch: 1: Average loss: 2.2664, Accuracy: 288.0/1000 (29%)
+___Test Target_Simple poisoned: False, epoch: 1: Average loss: 2.2645, Accuracy: 3160/10000 (31.6000%)
+Done in 3.449558973312378 sec.
+Selected models: [35, 84, 92, 20, 58, 73, 95, 34, 60, 9]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.5513410568237305
+___Test Target_Simple poisoned: True, epoch: 2: Average loss: 2.2528, Accuracy: 535.0/1000 (54%)
+___Test Target_Simple poisoned: False, epoch: 2: Average loss: 2.2511, Accuracy: 5686/10000 (56.8600%)
+Done in 3.277571678161621 sec.
+Selected models: [91, 46, 32, 95, 90, 35, 66, 71, 56, 90]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.5155720710754395
+___Test Target_Simple poisoned: True, epoch: 3: Average loss: 2.2670, Accuracy: 342.0/1000 (34%)
+___Test Target_Simple poisoned: False, epoch: 3: Average loss: 2.2661, Accuracy: 3351/10000 (33.5100%)
+Done in 3.222238779067993 sec.
+Selected models: [42, 31, 56, 30, 11, 2, 39, 10, 47, 59]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.5130250453948975
+___Test Target_Simple poisoned: True, epoch: 4: Average loss: 2.2377, Accuracy: 446.0/1000 (45%)
+___Test Target_Simple poisoned: False, epoch: 4: Average loss: 2.2352, Accuracy: 4527/10000 (45.2700%)
+Done in 3.3104450702667236 sec.
+Selected models: [32, 27, 20, 87, 15, 75, 49, 34, 80, 25]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.719036817550659
+___Test Target_Simple poisoned: True, epoch: 5: Average loss: 2.1941, Accuracy: 636.0/1000 (64%)
+___Test Target_Simple poisoned: False, epoch: 5: Average loss: 2.1889, Accuracy: 6479/10000 (64.7900%)
+Done in 3.4925060272216797 sec.
+Selected models: [46, 78, 41, 60, 12, 90, 84, 40, 90, 77]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.757160186767578
+___Test Target_Simple poisoned: True, epoch: 6: Average loss: 2.1367, Accuracy: 700.0/1000 (70%)
+___Test Target_Simple poisoned: False, epoch: 6: Average loss: 2.1285, Accuracy: 7267/10000 (72.6700%)
+Done in 3.5126547813415527 sec.
+Selected models: [76, 36, 89, 57, 72, 81, 19, 54, 51, 89]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.8733468055725098
+___Test Target_Simple poisoned: True, epoch: 7: Average loss: 2.0313, Accuracy: 750.0/1000 (75%)
+___Test Target_Simple poisoned: False, epoch: 7: Average loss: 2.0188, Accuracy: 7765/10000 (77.6500%)
+Done in 3.6897268295288086 sec.
+Selected models: [47, 32, 18, 38, 51, 58, 65, 89, 55, 17]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.5649261474609375
+___Test Target_Simple poisoned: True, epoch: 8: Average loss: 1.9127, Accuracy: 779.0/1000 (78%)
+___Test Target_Simple poisoned: False, epoch: 8: Average loss: 1.8969, Accuracy: 8035/10000 (80.3500%)
+Done in 3.299896240234375 sec.
+Selected models: [9, 33, 53, 78, 8, 88, 54, 63, 95, 47]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.9272561073303223
+___Test Target_Simple poisoned: True, epoch: 9: Average loss: 1.7664, Accuracy: 801.0/1000 (80%)
+___Test Target_Simple poisoned: False, epoch: 9: Average loss: 1.7476, Accuracy: 8266/10000 (82.6600%)
+Done in 3.7203259468078613 sec.
+Selected models: [67, 59, 77, 58, 93, 69, 47, 57, 59, 5]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.7226030826568604
+___Test Target_Simple poisoned: True, epoch: 10: Average loss: 1.6129, Accuracy: 826.0/1000 (83%)
+___Test Target_Simple poisoned: False, epoch: 10: Average loss: 1.5911, Accuracy: 8488/10000 (84.8800%)
+Done in 3.531934976577759 sec.
+Selected models: [12, 80, 87, 1, 6, 67, 47, 5, 70, 96]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.779700994491577
+___Test Target_Simple poisoned: True, epoch: 11: Average loss: 1.4798, Accuracy: 843.0/1000 (84%)
+___Test Target_Simple poisoned: False, epoch: 11: Average loss: 1.4576, Accuracy: 8569/10000 (85.6900%)
+Done in 3.5340540409088135 sec.
+Selected models: [56, 64, 84, 96, 56, 23, 2, 44, 67, 19]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.8657760620117188
+___Test Target_Simple poisoned: True, epoch: 12: Average loss: 1.3341, Accuracy: 858.0/1000 (86%)
+___Test Target_Simple poisoned: False, epoch: 12: Average loss: 1.3118, Accuracy: 8684/10000 (86.8400%)
+Done in 3.6552860736846924 sec.
+Selected models: [28, 78, 22, 47, 23, 90, 61, 72, 82, 7]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 2.6512868404388428
+Start training
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Traceback (most recent call last):
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/main_runner.py", line 25, in <module>
+    main.main_cas(args.defense, args.dataset)
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/attacks/ConstrainScale/main.py", line 592, in main_cas
+    epoch_loss_p, epoch_acc_p = test_poison(helper=helper,
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/attacks/ConstrainScale/main.py", line 478, in test_poison
+    output = model(data)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/models/MnistNet.py", line 19, in forward
+    x = F.max_pool2d(x, 2, 2)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/_jit_internal.py", line 624, in fn
+    return if_false(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/functional.py", line 830, in _max_pool2d
+    return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+KeyboardInterrupt

@@ -15,7 +15,7 @@ import config
 
 from attacks.ConstrainScale.utils.utils import SubsetSampler
 from models.cifar_model import CifarNet
-from models.MnistNet import MnistNet
+from models.simple import SimpleMnist
 
 logger = logging.getLogger("logger")
 POISONED_PARTICIPANT_POS = 0
@@ -32,19 +32,19 @@ class ImageHelper(Helper):
         local_model = None
         target_model = None
 
-        if self.params['type']==config.TYPE_CIFAR:
+        if self.params['dataset']==config.TYPE_CIFAR:
             local_model = ResNet18(name='Local',
                                    created_time=self.params['current_time'])
             target_model = ResNet18(name='Target',
                                    created_time=self.params['current_time'])
 
-        elif self.params['type']==config.TYPE_MNIST or self.params['type']==config.TYPE_FMNIST or self.params['type']==config.TYPE_EMNIST:
-            local_model = MnistNet(name='Local',
+        elif self.params['dataset']==config.TYPE_MNIST or self.params['dataset']==config.TYPE_FMNIST or self.params['dataset']==config.TYPE_EMNIST:
+            local_model = SimpleMnist(name='Local',
                                    created_time=self.params['current_time'])
-            target_model = MnistNet(name='Target',
+            target_model = SimpleMnist(name='Target',
                                     created_time=self.params['current_time'])
 
-        elif self.params['type']==config.TYPE_TINYIMAGENET:
+        elif self.params['dataset']==config.TYPE_TINYIMAGENET:
 
             local_model= ResNet18(name='Local',
                                    created_time=self.params['current_time'])
@@ -156,7 +156,7 @@ class ImageHelper(Helper):
     def load_data(self):
         logger.info('Loading data')
 
-        if self.params['type'] == config.TYPE_CIFAR:
+        if self.params['dataset'] == config.TYPE_CIFAR:
             ### data load
             transform_train = transforms.Compose([
                 transforms.ToTensor(),
@@ -171,7 +171,7 @@ class ImageHelper(Helper):
 
             self.test_dataset = datasets.CIFAR10('./data', train=False, transform=transform_test)
 
-        elif self.params['type'] == config.TYPE_MNIST:
+        elif self.params['dataset'] == config.TYPE_MNIST:
 
             self.train_dataset = datasets.MNIST('./data', train=True, download=True,
                                transform=transforms.Compose([
@@ -182,7 +182,7 @@ class ImageHelper(Helper):
                     transforms.ToTensor(),
                     # transforms.Normalize((0.1307,), (0.3081,))
                 ]))
-        elif self.params['type'] == config.TYPE_EMNIST:
+        elif self.params['dataset'] == config.TYPE_EMNIST:
 
             self.train_dataset = datasets.EMNIST('./data',split='digits', train=True, download=True,
                                transform=transforms.Compose([
@@ -194,7 +194,7 @@ class ImageHelper(Helper):
                     # transforms.Normalize((0.1307,), (0.3081,))
                 ]))
             
-        elif self.params['type'] == config.TYPE_FMNIST:
+        elif self.params['dataset'] == config.TYPE_FMNIST:
             self.train_dataset = datasets.FashionMNIST('./data', train=True, download=True,
                                transform=transforms.Compose([
                                    transforms.ToTensor(),

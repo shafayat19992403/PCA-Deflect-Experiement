@@ -1,0 +1,119 @@
+current path: saved_models/model_image_Jun.09_23.16.16
+Loading data
+Poisoned following participants: 1, These are [0]
+Selected models: [98, 91, 36, 17, 95, 11, 40, 68, 13, 64]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 72.59200501441956
+___Test Target_ResNet_18 poisoned: True, epoch: 1: Average loss: 2.3037, Accuracy: 103.0/1000 (10%)
+___Test Target_ResNet_18 poisoned: False, epoch: 1: Average loss: 2.3038, Accuracy: 1000/10000 (10.0000%)
+Done in 104.83469915390015 sec.
+Selected models: [68, 14, 92, 13, 76, 93, 92, 68, 40, 89]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 73.32758402824402
+___Test Target_ResNet_18 poisoned: True, epoch: 2: Average loss: 2.3038, Accuracy: 103.0/1000 (10%)
+___Test Target_ResNet_18 poisoned: False, epoch: 2: Average loss: 2.3036, Accuracy: 1000/10000 (10.0000%)
+Done in 104.80506706237793 sec.
+Selected models: [30, 87, 28, 48, 71, 64, 70, 31, 28, 98]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 78.53933906555176
+___Test Target_ResNet_18 poisoned: True, epoch: 3: Average loss: 2.3040, Accuracy: 103.0/1000 (10%)
+___Test Target_ResNet_18 poisoned: False, epoch: 3: Average loss: 2.3037, Accuracy: 1000/10000 (10.0000%)
+Done in 119.07070207595825 sec.
+Selected models: [6, 58, 34, 44, 33, 45, 9, 43, 25, 33]
+Entered Training
+There are 0 adversaries in the training. 
+time spent on training: 77.26570773124695
+___Test Target_ResNet_18 poisoned: True, epoch: 4: Average loss: 2.3054, Accuracy: 85.0/1000 (8%)
+___Test Target_ResNet_18 poisoned: False, epoch: 4: Average loss: 2.3042, Accuracy: 1000/10000 (10.0000%)
+Done in 123.38143992424011 sec.
+Selected models: [78, 21, 34, 57, 77, 16, 89, 4, 85, 12]
+Entered Training
+There are 0 adversaries in the training. 
+Start training
+Files already downloaded and verified
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Model 4 finished training, preparing delta.
+Model 5 finished training, preparing delta.
+Model 6 finished training, preparing delta.
+Model 7 finished training, preparing delta.
+Model 8 finished training, preparing delta.
+Model 9 finished training, preparing delta.
+Prining dhukse kina
+Model 0 finished training, preparing delta.
+Model 1 finished training, preparing delta.
+Model 2 finished training, preparing delta.
+Model 3 finished training, preparing delta.
+Traceback (most recent call last):
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/main_runner.py", line 25, in <module>
+    main.main_cas(args.defense, args.dataset)
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/attacks/ConstrainScale/main.py", line 581, in main_cas
+    weight_accumulator = train(helper=helper, epoch=epoch,
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/attacks/ConstrainScale/main.py", line 286, in train
+    output = model(data)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/models/resnet_cifar.py", line 90, in forward
+    out = self.layer1(out)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/container.py", line 250, in forward
+    input = module(input)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/shafayat/Desktop/GuardFL/PCA-Deflect-Experiements/models/resnet_cifar.py", line 32, in forward
+    out = F.relu(self.bn1(self.conv1(x)))
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/conv.py", line 554, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/Users/shafayat/miniforge3/envs/torch_env/lib/python3.10/site-packages/torch/nn/modules/conv.py", line 549, in _conv_forward
+    return F.conv2d(
+KeyboardInterrupt

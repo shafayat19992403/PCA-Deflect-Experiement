@@ -1,5 +1,6 @@
 ---
-type: mnist
+type: image
+dataset: mnist
 test_batch_size: 1000
 lr: 0.1
 momentum: 0.9
@@ -65,7 +66,7 @@ baseline: false
 random_compromise: false
 noise_level: 0.01
 
-poison_epochs: [1]
+poison_epochs: [5, 7, 9, 11]
 retrain_poison: 15
 scale_weights: 200
 poison_lr: 0.05

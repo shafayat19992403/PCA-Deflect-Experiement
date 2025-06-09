@@ -504,10 +504,25 @@ def main_cas(defense_name, dataset_name):
     helper = ImageHelper(current_time=current_time, params=params_loaded,
                              name=params_loaded.get('name', 'image'))
     
-    helper.params['type'] = dataset_name
+    helper.params['dataset'] = dataset_name
     helper.params['aggregation_methods'] = defense_name
     helper.load_data()
     helper.create_model()
+
+    # non_target_train_indices = [i for i, (_, label) in enumerate(helper.train_dataset) if label != helper.params['poison_label_swap']]
+    # non_target_test_indices = [i for i, (_, label) in enumerate(helper.test_dataset) if label != helper.params['poison_label_swap']]
+
+    # # Shuffle with seed
+    # random.seed(42)
+    # random.shuffle(non_target_train_indices)
+    # random.shuffle(non_target_test_indices)
+
+    # # Select poison indices
+    # poison_images = sorted(non_target_train_indices[:7])
+    # poison_images_test = sorted(non_target_test_indices[:5])
+    # helper.params['poison_images_test'] = poison_images_test
+    # helper.params['poison_images'] = poison_images
+    # helper.load_data()
 
     ### Create models
     if helper.params['is_poison']:
