@@ -143,7 +143,9 @@ def train(helper, epoch, train_data_sets, local_model, target_model, is_poison, 
                                     poison_pos = len(helper.params['poison_images'])*i + pos
                                     #random.randint(0, len(batch))
                                     batch[0][poison_pos] = helper.train_dataset[image][0]
-                                    batch[0][poison_pos].add_(torch.FloatTensor(batch[0][poison_pos].shape).normal_(0, helper.params['noise_level']))
+                                    # batch[0][poison_pos].add_(torch.FloatTensor(batch[0][poison_pos].shape).normal_(0, helper.params['noise_level']))
+                                    batch[0][poison_pos] = helper.add_trigger(helper.train_dataset[image][0])
+
 
 
                                     batch[1][poison_pos] = helper.params['poison_label_swap']
@@ -468,8 +470,10 @@ def test_poison(helper, epoch, data_source,
         if helper.params['type'] == 'image':
 
             for pos in range(len(batch[0])):
-                batch[0][pos] = helper.train_dataset[random.choice(helper.params['poison_images_test'])][0]
-
+                img = helper.train_dataset[random.choice(helper.params['poison_images_test'])][0]
+                trigger_img = helper.add_trigger(img)
+                batch[0][pos] = trigger_img
+                
                 batch[1][pos] = helper.params['poison_label_swap']
 
 
@@ -509,20 +513,22 @@ def main_cas(defense_name, dataset_name):
     helper.load_data()
     helper.create_model()
 
-    # non_target_train_indices = [i for i, (_, label) in enumerate(helper.train_dataset) if label != helper.params['poison_label_swap']]
-    # non_target_test_indices = [i for i, (_, label) in enumerate(helper.test_dataset) if label != helper.params['poison_label_swap']]
+    non_target_train_indices = [i for i, (_, label) in enumerate(helper.train_dataset) if label != helper.params['poison_label_swap']]
+    non_target_test_indices = [i for i, (_, label) in enumerate(helper.test_dataset) if label != helper.params['poison_label_swap']]
 
-    # # Shuffle with seed
-    # random.seed(42)
-    # random.shuffle(non_target_train_indices)
-    # random.shuffle(non_target_test_indices)
+    # Shuffle with seed
+    random.seed(42)
+    random.shuffle(non_target_train_indices)
+    random.shuffle(non_target_test_indices)
 
-    # # Select poison indices
-    # poison_images = sorted(non_target_train_indices[:7])
-    # poison_images_test = sorted(non_target_test_indices[:5])
-    # helper.params['poison_images_test'] = poison_images_test
-    # helper.params['poison_images'] = poison_images
-    # helper.load_data()
+    # Select poison indices
+    poison_images = sorted(non_target_train_indices[:7])
+    poison_images_test = sorted(non_target_test_indices[:5])
+    helper.params['poison_images_test'] = poison_images_test
+    helper.params['poison_images'] = poison_images
+    helper.load_data()
+    print(poison_images_test)
+    print(poison_images)
 
     ### Create models
     if helper.params['is_poison']:

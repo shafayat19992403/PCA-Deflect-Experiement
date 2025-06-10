@@ -33,9 +33,13 @@ class ImageHelper(Helper):
         target_model = None
 
         if self.params['dataset']==config.TYPE_CIFAR:
-            local_model = ResNet18(name='Local',
+            # local_model = ResNet18(name='Local',
+            #                        created_time=self.params['current_time'])
+            # target_model = ResNet18(name='Target',
+            #                        created_time=self.params['current_time'])
+            local_model = CifarNet(name='Local',
                                    created_time=self.params['current_time'])
-            target_model = ResNet18(name='Target',
+            target_model = CifarNet(name='Target',
                                    created_time=self.params['current_time'])
 
         elif self.params['dataset']==config.TYPE_MNIST or self.params['dataset']==config.TYPE_FMNIST or self.params['dataset']==config.TYPE_EMNIST:
@@ -101,6 +105,26 @@ class ImageHelper(Helper):
                 cifar_classes[n] = cifar_classes[n][min(len(cifar_classes[n]), no_imgs):]
 
         return per_participant_list
+    
+    def add_trigger(self, image, trigger_size=8, trigger_value=1.0):
+        """
+        Adds a square trigger to the bottom-right corner of the image.
+        
+        Parameters:
+            image (Tensor): shape (C, H, W)
+            trigger_size (int): width/height of the square
+            trigger_value (float): pixel intensity value (1.0 for white in normalized scale)
+        
+        Returns:
+            Tensor: image with trigger
+        """
+        img = image.clone()
+        c, h, w = img.shape
+
+        # Add trigger to all channels
+        img[:, h - trigger_size: h, w - trigger_size: w] = trigger_value
+        return img
+
 
     def poison_dataset(self):
         #
